@@ -2,6 +2,12 @@
 
 workshop/
 ├── back-end/
+│ ├── controllers/
+│ │ ├── RoomController.php
+│ │ ├── ReservationController.php
+│ ├── models/
+│ │ ├── Room.php
+│ │ ├── Reservation.php
 │ ├── php_to_vue.php
 ├── node_modules/
 ├── plan/
