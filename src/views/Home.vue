@@ -27,5 +27,4 @@ import Footer from "../components/Footer.vue";
   text-align: center;
   box-sizing: border-box;
 }
-
 </style>
