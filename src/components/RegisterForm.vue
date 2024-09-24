@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed } from "vue";
-// import bcrypt from "bcryptjs";
 
 const form = ref({
   firstname: "",
