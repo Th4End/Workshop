@@ -39,29 +39,48 @@ const submitForm = async () => {
 </script>
 
 <template>
-  <section>
+  <section class="container">
     <h2>Inscription</h2>
     <form @submit.prevent="submitForm">
-      <div>
-        <label for="firstname">Prénom</label>
+      <label for="firstname"
+        >Prénom
         <input type="text" id="firstname" v-model="form.firstname" />
-      </div>
-      <div>
-        <label for="lastname">Nom</label>
+      </label>
+      <label for="lastname"
+        >Nom
         <input type="text" id="lastname" v-model="form.lastname" />
-      </div>
-      <div>
-        <label for="email">Email</label>
+      </label>
+      <label for="email"
+        >Email
         <input type="text" id="email" v-model="form.email" />
-      </div>
-      <div>
-        <label for="pswd">Mot de passe</label>
+      </label>
+      <label for="pswd"
+        >Mot de passe
         <input type="password" id="pswd" v-model="form.pswd" />
-      </div>
+      </label>
       <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
       <button type="submit">M'inscrire</button>
     </form>
   </section>
 </template>
 
-<style lang="css" scoped></style>
+<style scoped>
+.container {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+}
+</style>
