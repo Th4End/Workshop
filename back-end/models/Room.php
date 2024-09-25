@@ -1,6 +1,14 @@
 <?php
 require_once '../config/Database.php';
 
+// Instanciation de la base de données
+try {
+    $database = new Database();
+    $db = $database->getConnection(); // Établir la connexion à la base de données
+} catch (Exception $e) {
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
+}
+
 class Room {
     private $conn;
     private $table = 'salles';
@@ -9,8 +17,8 @@ class Room {
     public $room_name;
 
     public function __construct($db) {
-        if (!$db || $db->connect_error) {
-            throw new Exception("Erreur de connexion à la base de données : " . ($db ? $db->connect_error : "Connexion non initialisée"));
+        if (!$db) {
+            throw new Exception("Erreur de connexion à la base de données : Connexion non initialisée");
         }
         $this->conn = $db;
     }
@@ -66,4 +74,5 @@ class Room {
         return $room; // Retourner la salle sous forme de tableau associatif
     }
 }
+
 ?>
