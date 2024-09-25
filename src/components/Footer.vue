@@ -15,7 +15,7 @@ const goToContact = () => {
 <template>
   <footer class="footer-container">
     <div class="footer-content">
-      <img class="footer-logo" src="../../public/logo_badgit.webp" alt="logo">
+      <img class="footer-logo" src="../../public/logo_badgit.webp" alt="logo" @click="router.push('/')">
       <nav class="footer-links">
         <span @click="goToFAQ">FAQ</span>
         <span @click="goToContact">Contact</span>

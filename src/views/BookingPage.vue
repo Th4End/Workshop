@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 // Exemple de données pour les salles
 const rooms = ref([
@@ -62,6 +64,7 @@ const cancelReservation = (roomId) => {
 </script>
 
 <template>
+  <Header />
   <section class="booking-page">
     <h2>Réservation de salles</h2>
     <div class="room-grid">
@@ -103,6 +106,7 @@ const cancelReservation = (roomId) => {
       </div>
     </div>
   </section>
+  <Footer />
 </template>
 
 <style scoped>
@@ -118,7 +122,6 @@ const cancelReservation = (roomId) => {
 }
 
 .room-card {
-  border: 1px solid #ccc;
   border-radius: 8px;
   padding: 15px;
   display: flex;
@@ -127,6 +130,7 @@ const cancelReservation = (roomId) => {
   align-items: center;
   text-align: center;
   min-height: 200px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .button-group {
@@ -137,19 +141,29 @@ const cancelReservation = (roomId) => {
 }
 
 button {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--color-text);
   padding: 5px 10px;
   border: none;
-  cursor: pointer;
+  border-radius: 5px;
 }
 
 button:disabled {
   background-color: #ccc;
-  cursor: not-allowed;
 }
 
-button:hover:not(:disabled) {
-  background-color: #2980b9;
+
+@media (min-width: 768px) {
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+  cursor: not-allowed;
+  }
+
+  button:hover:not(:disabled) {
+    background-color: var(--bg-color);
+  }
 }
 </style>

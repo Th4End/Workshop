@@ -30,7 +30,7 @@ const handleLogout = () => {
       />
     </div>
 
-    <img class="header-logo" src="../../public/logo_badgit.webp" alt="logo">
+    <img class="header-logo" src="../../public/logo_badgit.webp" alt="logo" @click="router.push('/')">
 
     <div class="header-right">
       <font-awesome-icon
