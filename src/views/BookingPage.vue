@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 
+// Exemple de données pour les salles
 const rooms = ref([
   {
     id: 1,
@@ -34,6 +35,7 @@ const timeSlots = [
   "16:00 - 18:00",
 ];
 
+// Fonction pour gérer la réservation
 const reserveRoom = (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
   if (room && room.selectedTimeSlot && room.currentOccupancy < room.capacity) {
@@ -46,6 +48,7 @@ const reserveRoom = (roomId) => {
   }
 };
 
+// Fonction pour annuler la réservation
 const cancelReservation = (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
   if (room && room.currentOccupancy > 0) {
