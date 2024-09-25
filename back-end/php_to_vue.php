@@ -1,9 +1,9 @@
 <?php
   // Connexion à la base de données
-  $db_host = 'your_database_host';
-  $db_username = 'your_database_username';
-  $db_password = 'your_database_password';
-  $db_name = 'your_database_name';
+  $db_host = 'http://192.168.1.145/phpmyadmin';
+  $db_username = ' root@localhost';
+  $db_password = '';
+  $db_name = 'badgeit';
 
   $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
 

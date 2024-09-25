@@ -1,5 +1,5 @@
 <?php
-require_once '../models/Room.php';
+require '../models/Room.php';
 
 class RoomController {
     private $db;

@@ -37,15 +37,31 @@ const timeSlots = [
   "16:00 - 18:00",
 ];
 
+// Variable pour stocker les messages d'erreur
+const errorMessage = ref(null);
+
 const fetchRooms = async () => {
   try {
     const response = await fetch(
-      "http://localhost/back-end/routes.php?action=getRooms"
+      "http://localhost/back-end/routes/routes.php?action=getRooms",
+      {
+        method: "GET", // Définir la méthode HTTP
+        mode: "cors", // Activer CORS
+        headers: {
+          "Content-Type": "application/json", // Définir le type de contenu
+        },
+      }
     );
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
     const data = await response.json();
     rooms.value = data; // Remplit la liste des salles avec les données du backend
   } catch (error) {
-    console.error("Erreur lors de la récupération des salles :", error);
+    errorMessage.value = "Erreur lors de la récupération des salles : " + error.message;
+    console.error(errorMessage.value);
   }
 };
 
@@ -59,7 +75,7 @@ const reserveRoom = async (roomId) => {
   if (room && room.selectedTimeSlot && room.currentOccupancy < room.capacity) {
     try {
       const response = await fetch(
-        "http://localhost:8000/back-end/routes.php?action=reserveRoom",
+        "http://localhost:8000/back-end/routes/routes.php?action=reserveRoom",
         {
           method: "POST",
           headers: {
@@ -76,7 +92,6 @@ const reserveRoom = async (roomId) => {
         }
       );
 
-      // Vérifie si la réponse du serveur est correcte
       if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);
       }
@@ -92,10 +107,12 @@ const reserveRoom = async (roomId) => {
         alert(data.message);
       }
     } catch (error) {
-      console.error("Erreur lors de la réservation :", error);
+      errorMessage.value = "Erreur lors de la réservation : " + error.message;
+      console.error(errorMessage.value);
     }
   } else {
-    alert("Veuillez sélectionner un créneau horaire ou la salle est pleine.");
+    errorMessage.value = "Veuillez sélectionner un créneau horaire ou la salle est pleine.";
+    alert(errorMessage.value);
   }
 };
 
@@ -105,7 +122,7 @@ const cancelReservation = async (roomId) => {
   if (room && room.currentOccupancy > 0) {
     try {
       const response = await fetch(
-        "http://localhost:8000/back-end/routes.php?action=cancelReservation",
+        "http://localhost:8000/back-end/routes/routes.php?action=cancelReservation",
         {
           method: "POST",
           headers: {
@@ -129,10 +146,12 @@ const cancelReservation = async (roomId) => {
         alert(data.message);
       }
     } catch (error) {
-      console.error("Erreur lors de l'annulation :", error);
+      errorMessage.value = "Erreur lors de l'annulation : " + error.message;
+      console.error(errorMessage.value);
     }
   } else {
-    alert("Aucune place à annuler.");
+    errorMessage.value = "Aucune place à annuler.";
+    alert(errorMessage.value);
   }
 };
 </script>
@@ -142,6 +161,7 @@ const cancelReservation = async (roomId) => {
     <Header />
     <section class="booking-page">
       <h2>Réservation de salles</h2>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
       <div class="room-grid">
         <div v-for="room in rooms" :key="room.id" class="room-card">
           <div class="room-info">
@@ -197,6 +217,11 @@ const cancelReservation = async (roomId) => {
   padding: 20px;
   text-align: center;
   flex-grow: 1;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 20px;
 }
 
 .room-grid {
