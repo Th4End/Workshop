@@ -1,9 +1,9 @@
 <?php
   // Connexion à la base de données
-  $db_host = 'your_database_host';
-  $db_username = 'your_database_username';
-  $db_password = 'your_database_password';
-  $db_name = 'your_database_name';
+  $db_host = 'localhost';
+  $db_username = 'root';
+  $db_password = '';
+  $db_name = 'badgeit';
 
   $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
 
@@ -17,7 +17,7 @@
   $email = $_POST['email'];
 
   // Insérer les données dans la base de données
-  $sql = "INSERT INTO your_table_name (name, email) VALUES ('$name', '$email')";
+  $sql = "INSERT INTO utilisateurs (name, email) VALUES ('$name', '$email')";
   $result = $conn->query($sql);
 
   // Fermer la connexion

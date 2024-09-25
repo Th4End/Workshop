@@ -1,8 +1,8 @@
 <?php
 class Database {
-    private $host = 'your_database_host';
+    private $host = 'localhost';
     private $db_name = 'badgeit';
-    private $username = 'root@localhost';
+    private $username = 'root';
     private $password = '';
     public $conn;
 
