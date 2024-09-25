@@ -1,13 +1,13 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const showMenu = ref(false);
 const router = useRouter();
 
 const goToProfile = () => {
   // Logique pour accéder au profil de l'utilisateur connecté
-  router.push('/profil');
+  router.push("/profil");
 };
 
 const toggleMenu = () => {
@@ -23,13 +23,21 @@ const handleLogout = () => {
 <template>
   <header class="header-container">
     <div class="header-left">
-      <font-awesome-icon :icon="['fas', 'user']" class="icon-user" @click="goToProfile" />
+      <font-awesome-icon
+        :icon="['fas', 'user']"
+        class="icon-user"
+        @click="goToProfile"
+      />
     </div>
 
     <h1 class="header-title">Badg'it</h1>
 
     <div class="header-right">
-      <font-awesome-icon :icon="['fas', 'bars']" class="icon-burger" @click="toggleMenu" />
+      <font-awesome-icon
+        :icon="['fas', 'bars']"
+        class="icon-burger"
+        @click="toggleMenu"
+      />
       <div v-if="showMenu" class="dropdown-menu">
         <ul>
           <li @click="router.push('/reserver-salle')">Réserver une salle</li>
@@ -67,7 +75,8 @@ const handleLogout = () => {
   text-align: right;
 }
 
-.icon-user, .icon-burger {
+.icon-user,
+.icon-burger {
   font-size: 24px;
   cursor: pointer;
 }
@@ -96,9 +105,9 @@ const handleLogout = () => {
   font-size: 16px;
 }
 
-
 @media (min-width: 768px) {
-  .icon-user, .icon-burger {
+  .icon-user,
+  .icon-burger {
     cursor: pointer;
   }
 
@@ -109,7 +118,6 @@ const handleLogout = () => {
 
   .dropdown-menu ul li:hover {
     background-color: #f5f5f5;
-
   }
 }
 </style>
