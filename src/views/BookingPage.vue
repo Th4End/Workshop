@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 const rooms = ref([
   {
@@ -59,53 +61,64 @@ const cancelReservation = (roomId) => {
 </script>
 
 <template>
-  <section class="booking-page">
-    <h2>Réservation de salles</h2>
-    <div class="room-grid">
-      <div v-for="room in rooms" :key="room.id" class="room-card">
-        <div class="room-info">
-          <h3>{{ room.name }}</h3>
-          <p>Capacité : {{ room.capacity }} personnes</p>
-          <p>Occupée par : {{ room.currentOccupancy }} personnes</p>
+  <div class="main-container">
+    <Header />
+    <section class="booking-page">
+      <h2>Réservation de salles</h2>
+      <div class="room-grid">
+        <div v-for="room in rooms" :key="room.id" class="room-card">
+          <div class="room-info">
+            <h3>{{ room.name }}</h3>
+            <p>Capacité : {{ room.capacity }} personnes</p>
+            <p>Occupée par : {{ room.currentOccupancy }} personnes</p>
 
-          <!-- Sélection du créneau horaire -->
-          <label for="time-slot">Choisissez un créneau :</label>
-          <select
-            v-model="room.selectedTimeSlot"
-            :disabled="room.currentOccupancy >= room.capacity"
-          >
-            <option value="" disabled>-- Sélectionner un créneau --</option>
-            <option v-for="slot in timeSlots" :key="slot" :value="slot">
-              {{ slot }}
-            </option>
-          </select>
+            <!-- Sélection du créneau horaire -->
+            <label for="time-slot">Choisissez un créneau :</label>
+            <select
+              v-model="room.selectedTimeSlot"
+              :disabled="room.currentOccupancy >= room.capacity"
+            >
+              <option value="" disabled>-- Sélectionner un créneau --</option>
+              <option v-for="slot in timeSlots" :key="slot" :value="slot">
+                {{ slot }}
+              </option>
+            </select>
 
-          <div class="button-group">
-            <button
-              @click="reserveRoom(room.id)"
-              :disabled="
-                room.currentOccupancy >= room.capacity || !room.selectedTimeSlot
-              "
-            >
-              Réserver
-            </button>
-            <button
-              @click="cancelReservation(room.id)"
-              :disabled="room.currentOccupancy === 0"
-            >
-              Annuler
-            </button>
+            <div class="button-group">
+              <button
+                @click="reserveRoom(room.id)"
+                :disabled="
+                  room.currentOccupancy >= room.capacity || !room.selectedTimeSlot
+                "
+              >
+                Réserver
+              </button>
+              <button
+                @click="cancelReservation(room.id)"
+                :disabled="room.currentOccupancy === 0"
+              >
+                Annuler
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+    <Footer />
+</div>
 </template>
 
 <style scoped>
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .booking-page {
   padding: 20px;
   text-align: center;
+  flex-grow: 1;
 }
 
 .room-grid {
@@ -115,7 +128,6 @@ const cancelReservation = (roomId) => {
 }
 
 .room-card {
-  border: 1px solid #ccc;
   border-radius: 8px;
   padding: 15px;
   display: flex;
@@ -124,6 +136,7 @@ const cancelReservation = (roomId) => {
   align-items: center;
   text-align: center;
   min-height: 200px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .button-group {
@@ -134,19 +147,29 @@ const cancelReservation = (roomId) => {
 }
 
 button {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--color-text);
   padding: 5px 10px;
   border: none;
-  cursor: pointer;
+  border-radius: 5px;
 }
 
 button:disabled {
   background-color: #ccc;
-  cursor: not-allowed;
 }
 
-button:hover:not(:disabled) {
-  background-color: #2980b9;
+
+@media (min-width: 768px) {
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+  cursor: not-allowed;
+  }
+
+  button:hover:not(:disabled) {
+    background-color: var(--bg-color);
+  }
 }
 </style>
