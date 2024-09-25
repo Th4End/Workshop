@@ -19,20 +19,33 @@ class ReservationController {
         $this->reservation->start_time = $start_time;
         $this->reservation->end_time = $end_time;
 
-        if ($this->reservation->createReservation()) {
-            echo json_encode(["message" => "Réservation réussie"]);
-        } else {
-            echo json_encode(["message" => "Erreur lors de la réservation"]);
+        try {
+            if ($this->reservation->createReservation()) {
+                echo json_encode(["message" => "Réservation réussie"]);
+            } else {
+                echo json_encode(["message" => "Erreur lors de la création de la réservation."]);
+            }
+        } catch (Exception $e) {
+            echo json_encode(["message" => "Erreur lors de la réservation: " . $e->getMessage()]);
         }
     }
 
     // Annuler une réservation
     public function cancelReservation($reservation_id) {
-        if ($this->reservation->cancelReservation($reservation_id)) {
-            echo json_encode(["message" => "Annulation réussie"]);
-        } else {
-            echo json_encode(["message" => "Erreur lors de l'annulation"]);
+        try {
+            if ($this->reservation->cancelReservation($reservation_id)) {
+                echo json_encode(["message" => "Annulation réussie"]);
+            } else {
+                echo json_encode(["message" => "Aucune réservation trouvée avec cet ID."]);
+            }
+        } catch (Exception $e) {
+            echo json_encode(["message" => "Erreur lors de l'annulation: " . $e->getMessage()]);
         }
+    }
+
+    // Récupérer les réservations
+    public function getReservations() {
+        // Implémentez la logique pour récupérer les réservations si nécessaire
     }
 }
 ?>
