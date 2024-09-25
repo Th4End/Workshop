@@ -2,17 +2,24 @@
 require_once '../models/Room.php';
 
 class RoomController {
-    public function getAllRooms() {
-        $rooms = Room::getAll();
-        echo json_encode($rooms);
+    private $db;
+    private $room;
+
+    public function __construct($db) {
+        $this->db = $db;
+        $this->room = new Room($db);
     }
 
-    public function getRoom($id) {
-        $room = Room::findById($id);
-        if ($room) {
-            echo json_encode($room);
-        } else {
-            echo json_encode(['message' => 'Room not found']);
+    // Récupérer toutes les salles
+    public function getRooms() {
+        $result = $this->room->getAllRooms();
+        $roomsArray = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $roomsArray[] = $row;
         }
+
+        echo json_encode($roomsArray);
     }
 }
+?>
