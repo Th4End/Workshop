@@ -1,8 +1,9 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
+// Liste des salles
 const rooms = ref([
   {
     id: 1,
@@ -36,29 +37,27 @@ const timeSlots = [
   "16:00 - 18:00",
 ];
 
+// Récupération des salles depuis le backend
 const fetchRooms = async () => {
   try {
     const response = await fetch(
       "http://localhost/back-end/routes.php?action=getRooms"
     );
     const data = await response.json();
-    rooms.value = data; // Remplit la liste des salles avec les données du backend
+    rooms.value = data;
   } catch (error) {
     console.error("Erreur lors de la récupération des salles :", error);
   }
 };
 
-onMounted(() => {
-  fetchRooms();
-});
-
+// Fonction pour gérer la réservation avec requête POST
 // Fonction pour gérer la réservation avec requête POST
 const reserveRoom = async (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
   if (room && room.selectedTimeSlot && room.currentOccupancy < room.capacity) {
     try {
       const response = await fetch(
-        "http://localhost/back-end/routes.php?action=reserveRoom",
+        "http://localhost:8000/back-end/routes.php?action=reserveRoom",
         {
           method: "POST",
           headers: {
@@ -68,13 +67,19 @@ const reserveRoom = async (roomId) => {
             user_id: 1, // ID utilisateur (à ajuster dynamiquement)
             course_id: 1, // ID du cours (à ajuster dynamiquement)
             room_id: roomId,
-            reservation_date: "2024-09-25", // Date de la réservation (à ajuster dynamiquement)
+            reservation_date: new Date().toISOString().slice(0, 10), // Date dynamique
             start_time: room.selectedTimeSlot.split(" - ")[0],
             end_time: room.selectedTimeSlot.split(" - ")[1],
           }),
         }
       );
-      const data = await response.json();
+
+      // Vérifie si la réponse du serveur est correcte
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json(); // Parse la réponse JSON
       if (data.message === "Réservation réussie") {
         room.currentOccupancy += 1;
         alert(
@@ -97,7 +102,7 @@ const cancelReservation = async (roomId) => {
   if (room && room.currentOccupancy > 0) {
     try {
       const response = await fetch(
-        "http://localhost/back-end/routes.php?action=cancelReservation",
+        "http://localhost:8000/back-end/routes.php?action=cancelReservation",
         {
           method: "POST",
           headers: {
@@ -108,6 +113,11 @@ const cancelReservation = async (roomId) => {
           }),
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
       const data = await response.json();
       if (data.message === "Annulation réussie") {
         room.currentOccupancy -= 1;
