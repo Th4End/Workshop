@@ -30,7 +30,7 @@ const handleLogout = () => {
       />
     </div>
 
-    <h1 class="header-title">Badg'it</h1>
+    <img class="header-logo" src="../../public/logo_badgit.webp" alt="logo">
 
     <div class="header-right">
       <font-awesome-icon
@@ -56,17 +56,17 @@ const handleLogout = () => {
   align-items: center;
   height: 60px;
   padding: 10px;
-  background-color: #f5f5f5;
+  background-color: var( --bg-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .header-left {
   flex: 1;
 }
 
-.header-title {
-  flex: 2;
-  text-align: center;
-  font-size: 24px;
+.header-logo {
+  width: 120px;
+  height: 120px;
 }
 
 .header-right {
@@ -78,7 +78,7 @@ const handleLogout = () => {
 .icon-user,
 .icon-burger {
   font-size: 24px;
-  cursor: pointer;
+  color: var(--color-text);
 }
 
 .dropdown-menu {

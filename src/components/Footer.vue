@@ -15,7 +15,7 @@ const goToContact = () => {
 <template>
   <footer class="footer-container">
     <div class="footer-content">
-      <h1>Logo</h1>
+      <img class="footer-logo" src="../../public/logo_badgit.webp" alt="logo">
       <nav class="footer-links">
         <span @click="goToFAQ">FAQ</span>
         <span @click="goToContact">Contact</span>
@@ -32,9 +32,9 @@ const goToContact = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 120px;
-  background-color: #f5f5f5;
+  background-color: var(--bg-color);
   padding: 0.5rem;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .footer-content {
@@ -45,13 +45,18 @@ const goToContact = () => {
   margin-bottom: 0.5rem;
 }
 
+.footer-logo {
+  width: 120px;
+  height: 120px;
+}
+
 .footer-links {
   display: flex;
   gap: 1rem;
 }
 
 .footer-links span {
-  color: #000000;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
