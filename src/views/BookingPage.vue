@@ -1,30 +1,8 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 // Exemple de données pour les salles
-const rooms = ref([
-  {
-    id: 1,
-    name: "Salle 101",
-    capacity: 20,
-    currentOccupancy: 0,
-    selectedTimeSlot: null,
-  },
-  {
-    id: 2,
-    name: "Salle 102",
-    capacity: 15,
-    currentOccupancy: 0,
-    selectedTimeSlot: null,
-  },
-  {
-    id: 3,
-    name: "Salle 103",
-    capacity: 25,
-    currentOccupancy: 0,
-    selectedTimeSlot: null,
-  },
-]);
+const rooms = ref([]);
 
 // Créneaux horaires disponibles
 const timeSlots = [
@@ -35,26 +13,89 @@ const timeSlots = [
   "16:00 - 18:00",
 ];
 
-// Fonction pour gérer la réservation
-const reserveRoom = (roomId) => {
+const fetchRooms = async () => {
+  try {
+    const response = await fetch(
+      "http://localhost/back-end/routes.php?action=getRooms"
+    );
+    const data = await response.json();
+    rooms.value = data; // Remplit la liste des salles avec les données du backend
+  } catch (error) {
+    console.error("Erreur lors de la récupération des salles :", error);
+  }
+};
+
+onMounted(() => {
+  fetchRooms();
+});
+
+// Fonction pour gérer la réservation avec requête POST
+const reserveRoom = async (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
   if (room && room.selectedTimeSlot && room.currentOccupancy < room.capacity) {
-    room.currentOccupancy += 1;
-    alert(
-      `Vous avez réservé une place dans la ${room.name} pour le créneau ${room.selectedTimeSlot}`
-    );
+    try {
+      const response = await fetch(
+        "http://localhost/back-end/routes.php?action=reserveRoom",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: 1, // ID utilisateur (à ajuster dynamiquement)
+            course_id: 1, // ID du cours (à ajuster dynamiquement)
+            room_id: roomId,
+            reservation_date: "2024-09-25", // Date de la réservation (à ajuster dynamiquement)
+            start_time: room.selectedTimeSlot.split(" - ")[0],
+            end_time: room.selectedTimeSlot.split(" - ")[1],
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.message === "Réservation réussie") {
+        room.currentOccupancy += 1;
+        alert(
+          `Vous avez réservé une place dans la ${room.name} pour le créneau ${room.selectedTimeSlot}`
+        );
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la réservation :", error);
+    }
   } else {
     alert("Veuillez sélectionner un créneau horaire ou la salle est pleine.");
   }
 };
 
-// Fonction pour annuler la réservation
-const cancelReservation = (roomId) => {
+// Fonction pour annuler la réservation avec requête POST
+const cancelReservation = async (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
   if (room && room.currentOccupancy > 0) {
-    room.currentOccupancy -= 1;
-    alert(`Vous avez annulé une place dans la ${room.name}`);
-    room.selectedTimeSlot = null; // Réinitialise le créneau horaire après annulation
+    try {
+      const response = await fetch(
+        "http://localhost/back-end/routes.php?action=cancelReservation",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            reservation_id: roomId, // L'ID de la réservation (à ajuster selon la logique backend)
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.message === "Annulation réussie") {
+        room.currentOccupancy -= 1;
+        alert(`Vous avez annulé une place dans la ${room.name}`);
+        room.selectedTimeSlot = null; // Réinitialise le créneau horaire après annulation
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'annulation :", error);
+    }
   } else {
     alert("Aucune place à annuler.");
   }
@@ -67,9 +108,11 @@ const cancelReservation = (roomId) => {
     <div class="room-grid">
       <div v-for="room in rooms" :key="room.id" class="room-card">
         <div class="room-info">
-          <h3>{{ room.name }}</h3>
+          <h3>{{ room.room_name }}</h3>
+          <!-- Utiliser `room_name` comme dans la base de données -->
           <p>Capacité : {{ room.capacity }} personnes</p>
-          <p>Occupée par : {{ room.currentOccupancy }} personnes</p>
+          <p>Occupée par : {{ room.currentOccupancy || 0 }} personnes</p>
+          <!-- Occupancy initialisé à 0 -->
 
           <!-- Sélection du créneau horaire -->
           <label for="time-slot">Choisissez un créneau :</label>
