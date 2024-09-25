@@ -10,7 +10,6 @@ class RoomController {
         $this->room = new Room($db);
     }
 
-    // Récupérer toutes les salles sans passer de paramètres
     public function getRooms() {
         $result = $this->room->getAllRooms();
         $roomsArray = [];

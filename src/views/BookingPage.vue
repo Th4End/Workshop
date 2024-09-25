@@ -37,20 +37,22 @@ const timeSlots = [
   "16:00 - 18:00",
 ];
 
-// Récupération des salles depuis le backend
 const fetchRooms = async () => {
   try {
     const response = await fetch(
       "http://localhost/back-end/routes.php?action=getRooms"
     );
     const data = await response.json();
-    rooms.value = data;
+    rooms.value = data; // Remplit la liste des salles avec les données du backend
   } catch (error) {
     console.error("Erreur lors de la récupération des salles :", error);
   }
 };
 
-// Fonction pour gérer la réservation avec requête POST
+onMounted(() => {
+  fetchRooms();
+});
+
 // Fonction pour gérer la réservation avec requête POST
 const reserveRoom = async (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
@@ -80,6 +82,7 @@ const reserveRoom = async (roomId) => {
       }
 
       const data = await response.json(); // Parse la réponse JSON
+
       if (data.message === "Réservation réussie") {
         room.currentOccupancy += 1;
         alert(
@@ -117,7 +120,6 @@ const cancelReservation = async (roomId) => {
       if (!response.ok) {
         throw new Error(`Erreur HTTP: ${response.status}`);
       }
-
       const data = await response.json();
       if (data.message === "Annulation réussie") {
         room.currentOccupancy -= 1;

@@ -16,7 +16,6 @@ require_once 'controllers/RoomController.php';
 require_once 'controllers/ReservationController.php'; // Inclure le contrôleur pour les réservations
 require_once 'config/Database.php';
 
-// Connexion à la base de données
 $database = new Database();
 $db = $database->getConnection();
 
