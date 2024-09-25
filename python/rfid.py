@@ -1,22 +1,25 @@
-# Début du code car compliquer de continuer sans la raspberry
-#import du package RPI.GPIO qui permet d'utiliser les broches GPIO de la raspberry
 import RPi.GPIO as GPIO
-#import du package MFRC522 qui permet d'interagir avec les lecteurs RFID
-from MFRC522 import SimpleMFRC255
-
-# initialisation du lecteur RFID
-reader = SimpleMFRC255()
-
-# lit la carte RFID et affiche les différentes informations et nettoie les ressources GPIO
+from mfrc522 import SimpleMFRC522
+# Initialisation du lecteur RFID
+reader = SimpleMFRC522()
+userr = "eliazid"
+etudiant_id = 1
+classe = 205
 try:
-    print("Approcher votre carte RFID")
+    print("Approchez votre carte RFID")
+
+    # Tente de lire une carte
     id, text = reader.read()
-    print(f"Id de la carte : {id}")
-    print(f"Données : {text}")
+
+    # Si une carte est scannée, affiche "OK"
+    if id:
+        print(f"{userr}\n{etudiant_id}\n{classe}")
+    else:
+        print("Non")
 
 except Exception as e:
-    # Gestion des exceptions, vous pouvez personnaliser le message selon vos besoins
+    # Gestion des exceptions
     print(f"Une erreur s'est produite : {e}")
 
 finally:
-    GPIO.cleanup()  # Nettoyage des ressources GPIO
+    GPIO.cleanup()

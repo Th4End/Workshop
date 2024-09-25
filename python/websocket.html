@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>Données des capteurs</h1>
+    <div id="sensorData"></div>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:6789');
+
+        socket.onopen = () => {
+            console.log('Connexion établie avec le serveur WebSocket.');
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            document.getElementById('sensorData').innerText =
+                `RFID: ${data.rfid.rfid}, Mouvement: ${data.motion.motion}`;
+        };
+
+        socket.onclose = () => {
+            console.log('Connexion fermée.');
+        };
+    </script>
+</body>
+</html>
