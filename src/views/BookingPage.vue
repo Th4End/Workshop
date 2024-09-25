@@ -3,8 +3,30 @@ import { ref, onMounted } from "vue";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
-// Exemple de données pour les salles
-const rooms = ref([]);
+// Liste des salles
+const rooms = ref([
+  {
+    id: 1,
+    name: "Salle 101",
+    capacity: 20,
+    currentOccupancy: 0,
+    selectedTimeSlot: null,
+  },
+  {
+    id: 2,
+    name: "Salle 102",
+    capacity: 15,
+    currentOccupancy: 0,
+    selectedTimeSlot: null,
+  },
+  {
+    id: 3,
+    name: "Salle 103",
+    capacity: 25,
+    currentOccupancy: 0,
+    selectedTimeSlot: null,
+  },
+]);
 
 // Créneaux horaires disponibles
 const timeSlots = [
@@ -37,7 +59,7 @@ const reserveRoom = async (roomId) => {
   if (room && room.selectedTimeSlot && room.currentOccupancy < room.capacity) {
     try {
       const response = await fetch(
-        "http://localhost/back-end/routes.php?action=reserveRoom",
+        "http://localhost:8000/back-end/routes.php?action=reserveRoom",
         {
           method: "POST",
           headers: {
@@ -47,13 +69,20 @@ const reserveRoom = async (roomId) => {
             user_id: 1, // ID utilisateur (à ajuster dynamiquement)
             course_id: 1, // ID du cours (à ajuster dynamiquement)
             room_id: roomId,
-            reservation_date: "2024-09-25", // Date de la réservation (à ajuster dynamiquement)
+            reservation_date: new Date().toISOString().slice(0, 10), // Date dynamique
             start_time: room.selectedTimeSlot.split(" - ")[0],
             end_time: room.selectedTimeSlot.split(" - ")[1],
           }),
         }
       );
-      const data = await response.json();
+
+      // Vérifie si la réponse du serveur est correcte
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json(); // Parse la réponse JSON
+
       if (data.message === "Réservation réussie") {
         room.currentOccupancy += 1;
         alert(
@@ -76,7 +105,7 @@ const cancelReservation = async (roomId) => {
   if (room && room.currentOccupancy > 0) {
     try {
       const response = await fetch(
-        "http://localhost/back-end/routes.php?action=cancelReservation",
+        "http://localhost:8000/back-end/routes.php?action=cancelReservation",
         {
           method: "POST",
           headers: {
@@ -87,6 +116,10 @@ const cancelReservation = async (roomId) => {
           }),
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
       const data = await response.json();
       if (data.message === "Annulation réussie") {
         room.currentOccupancy -= 1;
@@ -132,7 +165,8 @@ const cancelReservation = async (roomId) => {
               <button
                 @click="reserveRoom(room.id)"
                 :disabled="
-                  room.currentOccupancy >= room.capacity || !room.selectedTimeSlot
+                  room.currentOccupancy >= room.capacity ||
+                  !room.selectedTimeSlot
                 "
               >
                 Réserver
@@ -149,7 +183,7 @@ const cancelReservation = async (roomId) => {
       </div>
     </section>
     <Footer />
-</div>
+  </div>
 </template>
 
 <style scoped>
@@ -202,14 +236,13 @@ button:disabled {
   background-color: #ccc;
 }
 
-
 @media (min-width: 768px) {
   button {
     cursor: pointer;
   }
 
   button:disabled {
-  cursor: not-allowed;
+    cursor: not-allowed;
   }
 
   button:hover:not(:disabled) {

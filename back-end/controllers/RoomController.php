@@ -10,7 +10,6 @@ class RoomController {
         $this->room = new Room($db);
     }
 
-    // Récupérer toutes les salles
     public function getRooms() {
         $result = $this->room->getAllRooms();
         $roomsArray = [];
@@ -19,7 +18,7 @@ class RoomController {
             $roomsArray[] = $row;
         }
 
-        echo json_encode($roomsArray);
+        echo json_encode($roomsArray); // Renvoie les salles sous forme de JSON
     }
 }
 ?>
