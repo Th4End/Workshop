@@ -4,6 +4,7 @@ require_once 'controllers/RoomController.php';
 require_once 'controllers/ReservationController.php';
 require_once 'config/Database.php';
 
+// test
 // Configuration de la base de données
 $database = new Database();
 $db = $database->getConnection();
