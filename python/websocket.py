@@ -1,20 +1,18 @@
-import asyncio
 import websockets
-import json
 
-# Simuler des données des capteurs
-def get_sensor_data():
-    rfid_data = {"rfid": "1234567890"}
-    motion_data = {"motion": True}  # True si mouvement détecté, False sinon
-    return json.dumps({"rfid": rfid_data, "motion": motion_data})
 
-async def handler(websocket, path):
-    while True:
-        sensor_data = get_sensor_data()
-        await websocket.send(sensor_data)
-        await asyncio.sleep(5)  # Envoie des données toutes les 5 secondes
+url = "ws://http://10.61.55.5/phpmyadmin/index.php?route=/database/structure&db=badgeit"
 
-start_server = websockets.serve(handler, "localhost", 6789)
+def on_open(ws):
+    print("connexion établie")
+def on_close(ws, close_status_code, close_msg):
+    print("connexion fermée")
+def on_error(ws, error):
+    print(f"Erreur de connexion :{error}")
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+ws = websockets.WebSocketApp(url, on_open=on_open,on_close=on_close, on_error=on_error)
+
+try:
+    ws.run_forever()
+except KeyboardInterrupt:
+    print("Arrêt du client websocket.")
