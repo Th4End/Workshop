@@ -3,29 +3,8 @@ import { ref, onMounted } from "vue";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
-const rooms = ref([
-  {
-    id: 1,
-    name: "Salle 101",
-    capacity: 20,
-    currentOccupancy: 0,
-    selectedTimeSlot: null,
-  },
-  {
-    id: 2,
-    name: "Salle 102",
-    capacity: 15,
-    currentOccupancy: 0,
-    selectedTimeSlot: null,
-  },
-  {
-    id: 3,
-    name: "Salle 103",
-    capacity: 25,
-    currentOccupancy: 0,
-    selectedTimeSlot: null,
-  },
-]);
+// Exemple de données pour les salles
+const rooms = ref([]);
 
 // Créneaux horaires disponibles
 const timeSlots = [
