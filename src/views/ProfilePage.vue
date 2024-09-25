@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 // Informations utilisateur
 const user = ref({
@@ -94,114 +96,124 @@ const handleAvatarChange = (event) => {
 </script>
 
 <template>
-  <section class="profile-page">
-    <h2>Profile Utilisateur</h2>
+  <div class="main-container">
+  <Header />
+    <section class="profile-page">
+      <h2>Profile Utilisateur</h2>
 
-    <!-- Affichage des informations de l'utilisateur -->
-    <div class="profile-info">
-      <label for="firstName">Prénom :</label>
-      <input
-        type="text"
-        id="firstName"
-        v-model="user.firstName"
-        :disabled="!user.editable"
-        :class="{ error: errors.firstName }"
-      />
-      <span v-if="errors.firstName">{{ errors.firstName }}</span>
+      <!-- Affichage des informations de l'utilisateur -->
+      <div class="profile-info">
+        <label for="firstName">Prénom </label>
+        <input
+          type="text"
+          id="firstName"
+          v-model="user.firstName"
+          :disabled="!user.editable"
+          :class="{ error: errors.firstName }"
+        />
+        <span v-if="errors.firstName">{{ errors.firstName }}</span>
 
-      <label for="lastName">Nom :</label>
-      <input
-        type="text"
-        id="lastName"
-        v-model="user.lastName"
-        :disabled="!user.editable"
-        :class="{ error: errors.lastName }"
-      />
-      <span v-if="errors.lastName">{{ errors.lastName }}</span>
+        <label for="lastName">Nom </label>
+        <input
+          type="text"
+          id="lastName"
+          v-model="user.lastName"
+          :disabled="!user.editable"
+          :class="{ error: errors.lastName }"
+        />
+        <span v-if="errors.lastName">{{ errors.lastName }}</span>
 
-      <label for="email">Email :</label>
-      <input
-        type="email"
-        id="email"
-        v-model="user.email"
-        :disabled="!user.editable"
-        :class="{ error: errors.email }"
-      />
-      <span v-if="errors.email">{{ errors.email }}</span>
+        <label for="email">Email </label>
+        <input
+          type="email"
+          id="email"
+          v-model="user.email"
+          :disabled="!user.editable"
+          :class="{ error: errors.email }"
+        />
+        <span v-if="errors.email">{{ errors.email }}</span>
 
-      <label for="password">Mot de passe :</label>
-      <input
-        type="password"
-        id="password"
-        v-model="user.password"
-        :disabled="!user.editable"
-        :class="{ error: errors.password }"
-      />
-      <span v-if="errors.password">{{ errors.password }}</span>
+        <label for="password">Mot de passe </label>
+        <input
+          type="password"
+          id="password"
+          v-model="user.password"
+          :disabled="!user.editable"
+          :class="{ error: errors.password }"
+        />
+        <span v-if="errors.password">{{ errors.password }}</span>
 
-      <label for="avatar">Avatar :</label>
-      <input
-        type="file"
-        id="avatar"
-        @change="handleAvatarChange"
-        :disabled="!user.editable"
-      />
-      <div v-if="user.avatar">
-        <img :src="user.avatar" alt="Avatar" class="avatar-preview" />
+        <label for="avatar">Avatar </label>
+        <input
+          type="file"
+          id="avatar"
+          @change="handleAvatarChange"
+          :disabled="!user.editable"
+        />
+        <div v-if="user.avatar">
+          <img :src="user.avatar" alt="Avatar" class="avatar-preview" />
+        </div>
+
+        <label for="bio">Bio </label>
+        <textarea
+          id="bio"
+          v-model="user.bio"
+          :disabled="!user.editable"
+          :class="{ error: errors.bio }"
+        ></textarea>
+        <span v-if="errors.bio">{{ errors.bio }}</span>
+
+        <label for="location">Localisation </label>
+        <input
+          type="text"
+          id="location"
+          v-model="user.location"
+          :disabled="!user.editable"
+          :class="{ error: errors.location }"
+        />
+        <span v-if="errors.location">{{ errors.location }}</span>
+
+        <label for="phone">Téléphone </label>
+        <input
+          type="text"
+          id="phone"
+          v-model="user.phone"
+          :disabled="!user.editable"
+          :class="{ error: errors.phone }"
+        />
+        <span v-if="errors.phone">{{ errors.phone }}</span>
       </div>
 
-      <label for="bio">Bio :</label>
-      <textarea
-        id="bio"
-        v-model="user.bio"
-        :disabled="!user.editable"
-        :class="{ error: errors.bio }"
-      ></textarea>
-      <span v-if="errors.bio">{{ errors.bio }}</span>
-
-      <label for="location">Localisation :</label>
-      <input
-        type="text"
-        id="location"
-        v-model="user.location"
-        :disabled="!user.editable"
-        :class="{ error: errors.location }"
-      />
-      <span v-if="errors.location">{{ errors.location }}</span>
-
-      <label for="phone">Téléphone :</label>
-      <input
-        type="text"
-        id="phone"
-        v-model="user.phone"
-        :disabled="!user.editable"
-        :class="{ error: errors.phone }"
-      />
-      <span v-if="errors.phone">{{ errors.phone }}</span>
-    </div>
-
-    <!-- Boutons pour activer l'édition ou sauvegarder les modifications -->
-    <div class="button-group">
-      <button v-if="!user.editable" @click="user.editable = true">
-        Modifier
-      </button>
-      <button v-if="user.editable" @click="saveProfile">Enregistrer</button>
-      <button v-if="user.editable" @click="user.editable = false">
-        Annuler
-      </button>
-    </div>
-  </section>
+      <!-- Boutons pour activer l'édition ou sauvegarder les modifications -->
+      <div class="button-group">
+        <button v-if="!user.editable" @click="user.editable = true">
+          Modifier
+        </button>
+        <button v-if="user.editable" @click="saveProfile">Enregistrer</button>
+        <button v-if="user.editable" @click="user.editable = false">
+          Annuler
+        </button>
+      </div>
+    </section>
+  <Footer />
+  </div>
 </template>
 
 <style scoped>
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 /* Centrage simple du contenu */
 .profile-page {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
   padding: 20px;
+  flex-grow: 1;
 }
 
 .profile-info {
@@ -209,6 +221,7 @@ const handleAvatarChange = (event) => {
   flex-direction: column;
   gap: 10px;
   width: 300px;
+  margin-bottom: 20px;
 }
 
 /* Centrage des boutons */
@@ -219,21 +232,16 @@ const handleAvatarChange = (event) => {
 }
 
 button {
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--color-text);
+  padding: 5px 10px;
+  margin: auto;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #2980b9;
 }
 
 button:disabled {
   background-color: #ccc;
-  cursor: not-allowed;
 }
 
 .avatar-preview {
@@ -251,5 +259,23 @@ button:disabled {
 span {
   color: red;
   font-size: 12px;
+}
+
+@media (min-width: 768px) {
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+  cursor: not-allowed;
+  }
+
+  button:hover {
+    background-color: var(--bg-color);
+  }
+
+  button:hover:not(:disabled) {
+    background-color: var(--bg-color);
+  }
 }
 </style>

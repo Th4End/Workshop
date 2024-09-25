@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from "vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 // Variables pour stocker les données du formulaire
 const name = ref("");
@@ -28,57 +30,68 @@ const sendMessage = () => {
 </script>
 
 <template>
-  <section class="contact-page">
-    <h2>Contactez-nous</h2>
+  <div class="main-container">
+    <Header />
+    <section class="contact-page">
+      <h2>Contactez-nous</h2>
 
-    <!-- Formulaire de contact -->
-    <div class="contact-form">
-      <label for="name">Nom :</label>
-      <input
-        type="text"
-        id="name"
-        v-model.trim="name"
-        placeholder="Votre nom"
-      />
+      <!-- Formulaire de contact -->
+      <div class="contact-form">
+        <label for="name">Nom</label>
+        <input
+          type="text"
+          id="name"
+          v-model.trim="name"
+          placeholder="Votre nom"
+        />
 
-      <label for="email">Email :</label>
-      <input
-        type="email"
-        id="email"
-        v-model.trim="email"
-        placeholder="Votre email"
-      />
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          v-model.trim="email"
+          placeholder="Votre email"
+        />
 
-      <label for="message">Message :</label>
-      <textarea
-        id="message"
-        v-model.trim="message"
-        placeholder="Votre message"
-      ></textarea>
+        <label for="message">Message</label>
+        <textarea
+          id="message"
+          v-model.trim="message"
+          placeholder="Votre message"
+        ></textarea>
 
-      <button @click="sendMessage">Envoyer</button>
-    </div>
-
-    <!-- Affichage des messages envoyés -->
-    <div class="messages">
-      <h3>Messages envoyés :</h3>
-      <div v-for="(msg, index) in messages" :key="index" class="message">
-        <p>
-          <strong>{{ msg.name }} ({{ msg.email }})</strong>
-        </p>
-        <p>{{ msg.message }}</p>
-        <p>
-          <em>Envoyé le {{ msg.date }}</em>
-        </p>
+        <button @click="sendMessage">Envoyer</button>
       </div>
-    </div>
-  </section>
+
+      <!-- Affichage des messages envoyés -->
+      <div class="messages">
+        <h3>Messages envoyés</h3>
+        <div v-for="(msg, index) in messages" :key="index" class="message">
+          <p>
+            <strong>{{ msg.name }} ({{ msg.email }})</strong>
+          </p>
+          <p>{{ msg.message }}</p>
+          <p>
+            <em>Envoyé le {{ msg.date }}</em>
+          </p>
+        </div>
+      </div>
+    </section>
+    <Footer />
+</div>
 </template>
 
 <style scoped>
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .contact-page {
   padding: 20px;
   text-align: center;
+  flex-grow: 1;
 }
 
 .contact-form {
@@ -86,6 +99,9 @@ const sendMessage = () => {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 400px;
 }
 
 .contact-form label {
@@ -101,16 +117,12 @@ const sendMessage = () => {
 }
 
 button {
-  padding: 10px 20px;
-  background-color: #3498db;
-  color: white;
+  background-color: var(--bg-color);
+  color: var(--color-text);
+  padding: 5px 10px;
+  margin: auto;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #2980b9;
 }
 
 .messages {
@@ -121,5 +133,25 @@ button:hover {
   border-bottom: 1px solid #ccc;
   margin-bottom: 10px;
   padding-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+  .contact-form {
+    max-width: 600px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: var(--color-secondary);
+  }
+}
+
+@media (min-width: 1024px) {
+  .contact-form {
+    max-width: 800px;
+  }
 }
 </style>
