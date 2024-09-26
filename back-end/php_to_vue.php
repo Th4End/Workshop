@@ -1,7 +1,7 @@
 <?php
   // Connexion à la base de données
-  $db_host = 'localhost';
-  $db_username = 'root';
+  $db_host = 'http://192.168.1.145/phpmyadmin';
+  $db_username = ' root@localhost';
   $db_password = '';
   $db_name = 'badgeit';
 

@@ -1,6 +1,6 @@
 <?php
 class Database {
-    private $host = 'localhost';
+    private $host = '192.168.1.145';
     private $db_name = 'badgeit';
     private $username = 'root';
     private $password = '';

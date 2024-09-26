@@ -1,5 +1,5 @@
 <?php
-require_once '../models/Room.php';
+require '../models/Room.php';
 
 class RoomController {
     private $db;
@@ -10,16 +10,12 @@ class RoomController {
         $this->room = new Room($db);
     }
 
-    // Récupérer toutes les salles
     public function getRooms() {
+        // Appel de getAllRooms() qui retourne déjà un tableau associatif
         $result = $this->room->getAllRooms();
-        $roomsArray = [];
 
-        while ($row = $result->fetch_assoc()) {
-            $roomsArray[] = $row;
-        }
-
-        echo json_encode($roomsArray);
+        // Le résultat est déjà un tableau, pas besoin de fetch_assoc
+        echo json_encode($result); // Renvoie les salles sous forme de JSON
     }
 }
 ?>

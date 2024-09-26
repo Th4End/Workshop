@@ -3,8 +3,8 @@ import { ref, onMounted } from "vue";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
-// Exemple de données pour les salles
-const rooms = ref([]);
+// Liste des salles
+const rooms = ref([]); // Initialiser comme tableau vide
 
 // Créneaux horaires disponibles
 const timeSlots = [
@@ -15,15 +15,32 @@ const timeSlots = [
   "16:00 - 18:00",
 ];
 
+// Variables pour stocker les messages d'erreur
+const errorMessage = ref(null);
+const successMessage = ref(null);
+
 const fetchRooms = async () => {
   try {
     const response = await fetch(
-      "http://localhost/back-end/routes.php?action=getRooms"
+      "http://localhost/back-end/routes/routes.php?action=getRooms",
+      {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
     const data = await response.json();
-    rooms.value = data; // Remplit la liste des salles avec les données du backend
+    rooms.value = data.map(room => ({ ...room, currentOccupancy: 0 })); // Assurez-vous que currentOccupancy commence à 0
   } catch (error) {
-    console.error("Erreur lors de la récupération des salles :", error);
+    errorMessage.value = "Erreur lors de la récupération des salles : " + error.message;
+    console.error(errorMessage.value);
   }
 };
 
@@ -34,39 +51,51 @@ onMounted(() => {
 // Fonction pour gérer la réservation avec requête POST
 const reserveRoom = async (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
-  if (room && room.selectedTimeSlot && room.currentOccupancy < room.capacity) {
-    try {
-      const response = await fetch(
-        "http://localhost/back-end/routes.php?action=reserveRoom",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: 1, // ID utilisateur (à ajuster dynamiquement)
-            course_id: 1, // ID du cours (à ajuster dynamiquement)
-            room_id: roomId,
-            reservation_date: "2024-09-25", // Date de la réservation (à ajuster dynamiquement)
-            start_time: room.selectedTimeSlot.split(" - ")[0],
-            end_time: room.selectedTimeSlot.split(" - ")[1],
-          }),
-        }
-      );
-      const data = await response.json();
-      if (data.message === "Réservation réussie") {
-        room.currentOccupancy += 1;
-        alert(
-          `Vous avez réservé une place dans la ${room.name} pour le créneau ${room.selectedTimeSlot}`
+  console.log(`Room ID: ${roomId}, Current Occupancy: ${room.currentOccupancy}, Capacity: ${room.capacity}`); // Log ici
+  if (room && room.selectedTimeSlot) {
+    if (room.currentOccupancy < room.capacity) {
+      try {
+        const response = await fetch(
+          "http://localhost/back-end/routes/routes.php?action=reserveRoom",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user_id: 1,
+              course_id: 1,
+              room_id: roomId,
+              reservation_date: new Date().toISOString().slice(0, 10),
+              start_time: room.selectedTimeSlot.split(" - ")[0],
+              end_time: room.selectedTimeSlot.split(" - ")[1],
+            }),
+          }
         );
-      } else {
-        alert(data.message);
+
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(data); // Log de la réponse de l'API
+
+        if (data.message === "Réservation réussie") {
+          room.currentOccupancy += 1; // Met à jour l'occupation
+          successMessage.value = `Réservation réussie : Vous avez réservé une place dans la ${room.room_name} pour le créneau ${room.selectedTimeSlot}.`;
+          room.selectedTimeSlot = null;
+        } else {
+          errorMessage.value = data.message; // Affiche le message d'erreur
+        }
+      } catch (error) {
+        errorMessage.value = "Erreur lors de la réservation : " + error.message;
+        console.error(errorMessage.value);
       }
-    } catch (error) {
-      console.error("Erreur lors de la réservation :", error);
+    } else {
+      errorMessage.value = "La salle est pleine. Veuillez sélectionner un autre créneau.";
     }
   } else {
-    alert("Veuillez sélectionner un créneau horaire ou la salle est pleine.");
+    errorMessage.value = "Veuillez sélectionner un créneau horaire.";
   }
 };
 
@@ -76,30 +105,35 @@ const cancelReservation = async (roomId) => {
   if (room && room.currentOccupancy > 0) {
     try {
       const response = await fetch(
-        "http://localhost/back-end/routes.php?action=cancelReservation",
+        "http://localhost/back-end/routes/routes.php?action=cancelReservation",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            reservation_id: roomId, // L'ID de la réservation (à ajuster selon la logique backend)
+            reservation_id: roomId, // Ajuster selon la logique backend
           }),
         }
       );
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
       const data = await response.json();
       if (data.message === "Annulation réussie") {
-        room.currentOccupancy -= 1;
-        alert(`Vous avez annulé une place dans la ${room.name}`);
-        room.selectedTimeSlot = null; // Réinitialise le créneau horaire après annulation
+        room.currentOccupancy -= 1; // Met à jour l'occupation
+        successMessage.value = `Annulation réussie : Vous avez annulé une place dans la ${room.room_name}.`;
+        room.selectedTimeSlot = null;
       } else {
-        alert(data.message);
+        errorMessage.value = data.message; // Affiche le message d'erreur
       }
     } catch (error) {
-      console.error("Erreur lors de l'annulation :", error);
+      errorMessage.value = "Erreur lors de l'annulation : " + error.message;
+      console.error(errorMessage.value);
     }
   } else {
-    alert("Aucune place à annuler.");
+    errorMessage.value = "Aucune réservation à annuler.";
   }
 };
 </script>
@@ -109,10 +143,12 @@ const cancelReservation = async (roomId) => {
     <Header />
     <section class="booking-page">
       <h2>Réservation de salles</h2>
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
       <div class="room-grid">
         <div v-for="room in rooms" :key="room.id" class="room-card">
           <div class="room-info">
-            <h3>{{ room.name }}</h3>
+            <h3>{{ room.room_name }}</h3>
             <p>Capacité : {{ room.capacity }} personnes</p>
             <p>Occupée par : {{ room.currentOccupancy }} personnes</p>
 
@@ -132,7 +168,8 @@ const cancelReservation = async (roomId) => {
               <button
                 @click="reserveRoom(room.id)"
                 :disabled="
-                  room.currentOccupancy >= room.capacity || !room.selectedTimeSlot
+                  room.currentOccupancy >= room.capacity ||
+                  !room.selectedTimeSlot
                 "
               >
                 Réserver
@@ -149,7 +186,7 @@ const cancelReservation = async (roomId) => {
       </div>
     </section>
     <Footer />
-</div>
+  </div>
 </template>
 
 <style scoped>
@@ -163,6 +200,16 @@ const cancelReservation = async (roomId) => {
   padding: 20px;
   text-align: center;
   flex-grow: 1;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 20px;
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 20px;
 }
 
 .room-grid {
@@ -202,14 +249,13 @@ button:disabled {
   background-color: #ccc;
 }
 
-
 @media (min-width: 768px) {
   button {
     cursor: pointer;
   }
 
   button:disabled {
-  cursor: not-allowed;
+    cursor: not-allowed;
   }
 
   button:hover:not(:disabled) {
@@ -217,3 +263,4 @@ button:disabled {
   }
 }
 </style>
+  
