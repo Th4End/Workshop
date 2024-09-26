@@ -167,5 +167,21 @@ class Utilisateur {
             return false;
         }
     }
+    public function getAllUsers() {
+        $query = "SELECT * FROM " . $this->table;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // Récupérer un utilisateur par ID
+    public function getUserById($id) {
+        $query = "SELECT * FROM " . $this->table . " WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
+
 }
 ?>

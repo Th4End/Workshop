@@ -92,5 +92,22 @@ class Reservation {
             throw new Exception("Aucune salle trouvée.");
         }
     }
+    public function getAllReservations($user_id = null) {
+        $query = "SELECT * FROM " . $this->table;
+
+        if ($user_id) {
+            $query .= " WHERE user_id = ?";
+        }
+
+        $stmt = $this->conn->prepare($query);
+
+        if ($user_id) {
+            $stmt->bind_param("i", $user_id);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
 ?>

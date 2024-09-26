@@ -58,8 +58,20 @@ class ReservationController {
     }
 
     // Récupérer les réservations
-    public function getReservations() {
-        // Implémentez la logique pour récupérer les réservations si nécessaire
+    public function getReservations($user_id = null) {
+    
+        try {
+            $reservations = $this->reservation->getAllReservations($user_id); // Méthode à implémenter dans le modèle Reservation
+    
+            if (empty($reservations)) {
+                echo json_encode(["message" => "Aucune réservation trouvée."]);
+            } else {
+                echo json_encode(["reservations" => $reservations]);
+            }
+        } catch (Exception $e) {
+            error_log("Erreur lors de la récupération des réservations: " . $e->getMessage());
+            echo json_encode(["message" => "Erreur lors de la récupération des réservations: " . $e->getMessage()]);
+        }
     }
 }
 ?>

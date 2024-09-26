@@ -33,7 +33,6 @@ $roomController = new RoomController($db);
 $reservationController = new ReservationController($db);
 $userController = new UtilisateurController($db);
 
-
 // Vérifier l'existence du paramètre 'action'
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
@@ -101,7 +100,6 @@ if (isset($_GET['action'])) {
 
         // Réserver une salle
         elseif ($action == 'reserveRoom') {
-            // Vérifier que toutes les informations nécessaires sont fournies
             if (isset($input['user_id'], $input['course_id'], $input['room_id'], $input['reservation_date'], $input['start_time'], $input['end_time'])) {
                 try {
                     $reservationController->reserveRoom(
@@ -123,6 +121,68 @@ if (isset($_GET['action'])) {
                 echo json_encode(["message" => "Paramètres manquants pour la réservation"]);
             }
         } else {
+            echo json_encode(["message" => "Action non reconnue"]);
+        }
+    }
+
+    // Gérer les requêtes GET
+    elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
+        // Récupérer tous les utilisateurs
+        if ($action == 'getAllUsers') {
+            try {
+                $users = $userController->getAllUsers();
+                echo json_encode($users);
+            } catch (Exception $e) {
+                echo json_encode([
+                    "message" => "Erreur lors de la récupération des utilisateurs",
+                    "error" => $e->getMessage()
+                ]);
+            }
+        }
+
+        // Récupérer un utilisateur par ID
+        elseif ($action == 'getUserById') {
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+                try {
+                    $user = $userController->getUserById($id);
+                    if ($user) {
+                        echo json_encode($user);
+                    } else {
+                        echo json_encode(["message" => "Utilisateur non trouvé."]);
+                    }
+                } catch (Exception $e) {
+                    echo json_encode([
+                        "message" => "Erreur lors de la récupération de l'utilisateur",
+                        "error" => $e->getMessage()
+                    ]);
+                }
+            } else {
+                echo json_encode(["message" => "ID manquant pour la récupération de l'utilisateur"]);
+            }
+        }elseif ($action == 'getUserByEmail') {
+            if (isset($_GET['email'])) {
+                $id = $_GET['email'];
+                try {
+                    $user = $userController->getUserByEmail($id);
+                    if ($user) {
+                        echo json_encode($user);
+                    } else {
+                        echo json_encode(["message" => "Utilisateur non trouvé."]);
+                    }
+                } catch (Exception $e) {
+                    echo json_encode([
+                        "message" => "Erreur lors de la récupération de l'utilisateur",
+                        "error" => $e->getMessage()
+                    ]);
+                }
+            } else {
+                echo json_encode(["message" => "ID manquant pour la récupération de l'utilisateur"]);
+            }
+        }
+
+        // Gérer d'autres requêtes GET si nécessaire...
+        else {
             echo json_encode(["message" => "Action non reconnue"]);
         }
     } else {
