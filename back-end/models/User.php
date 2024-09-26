@@ -2,11 +2,21 @@
 class Utilisateur {
     private $conn;
     private $table = 'utilisateurs';
-    private $encryption_key; // Clé de chiffrement
+    private $encryption_key;
 
     public function __construct($db) {
         $this->conn = $db;
         $this->encryption_key = 'E548OPR845645TREASDFTMP7896'; // Utilisez une clé suffisamment complexe
+    }
+
+    // Générer un salt
+    private function generateSalt() {
+        return bin2hex(random_bytes(16)); // Génère un salt aléatoire
+    }
+
+    // Hacher le mot de passe avec un salt
+    private function hashPassword($password, $salt) {
+        return hash('sha256', $password . $salt); // Hachage avec SHA-256
     }
 
     // Chiffrer le mot de passe avec AES-256
@@ -57,10 +67,13 @@ class Utilisateur {
         }
 
         try {
-            $encryptedPassword = $this->encryptPassword($password);
-            $query = "INSERT INTO " . $this->table . " (name, email, password) VALUES (?, ?, ?)";
+            $salt = $this->generateSalt();
+            $hashedPassword = $this->hashPassword($password, $salt); // Hachage avec le salt
+            $encryptedPassword = $this->encryptPassword($hashedPassword); // Chiffrement du mot de passe haché
+            
+            $query = "INSERT INTO " . $this->table . " (name, email, password, salt) VALUES (?, ?, ?, ?)";
             $stmt = $this->conn->prepare($query);
-            $stmt->bind_param("sss", $name, $email, $encryptedPassword);
+            $stmt->bind_param("ssss", $name, $email, $encryptedPassword, $salt);
             if ($stmt->execute()) {
                 echo json_encode(["message" => "Utilisateur créé avec succès"]);
             } else {
@@ -82,9 +95,7 @@ class Utilisateur {
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            $user['password'] = $this->decryptPassword($user['password']);
-            return $user;
+            return $result->fetch_assoc();
         } else {
             return null;
         }
@@ -105,8 +116,14 @@ class Utilisateur {
         }
 
         $user = $this->getUserByEmail($email);
-        if ($user && $this->decryptPassword($user['password']) === $password) {
-            echo json_encode(["message" => "Connexion réussie"]);
+        if ($user) {
+            $decryptedPassword = $this->decryptPassword($user['password']);
+            $hashedPassword = $this->hashPassword($decryptedPassword, $user['salt']);
+            if ($hashedPassword === $this->hashPassword($password, $user['salt'])) {
+                echo json_encode(["message" => "Connexion réussie"]);
+            } else {
+                echo json_encode(["message" => "Email ou mot de passe incorrect."]);
+            }
         } else {
             echo json_encode(["message" => "Email ou mot de passe incorrect."]);
         }
@@ -114,15 +131,17 @@ class Utilisateur {
 
     // Mettre à jour un utilisateur
     public function updateUser($id, $name, $email, $password = null) {
-        $query = "UPDATE " . $this->table . " SET name = ?, email = ?" . ($password ? ", password = ?" : "") . " WHERE id = ?";
+        $query = "UPDATE " . $this->table . " SET name = ?, email = ?" . ($password ? ", password = ? WHERE id = ?" : " WHERE id = ?");
         $stmt = $this->conn->prepare($query);
         if ($stmt === false) {
             throw new Exception("Erreur lors de la préparation de la requête : " . $this->conn->error);
         }
 
         if ($password) {
-            $encryptedPassword = $this->encryptPassword($password);
-            $stmt->bind_param("ssi", $name, $email, $encryptedPassword, $id);
+            $salt = $this->generateSalt();
+            $hashedPassword = $this->hashPassword($password, $salt);
+            $encryptedPassword = $this->encryptPassword($hashedPassword);
+            $stmt->bind_param("sssi", $name, $email, $encryptedPassword, $id);
         } else {
             $stmt->bind_param("ssi", $name, $email, $id);
         }
