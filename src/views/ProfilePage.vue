@@ -9,9 +9,7 @@ const user = ref({
   lastName: "",
   email: "",
   password: "",
-  bio: "",
-  location: "",
-  phone: "",
+  role_id: "",
 });
 
 // Erreurs de validation
@@ -20,9 +18,7 @@ const errors = ref({
   lastName: "",
   email: "",
   password: "",
-  bio: "",
-  location: "",
-  phone: "",
+  role_id: "",
 });
 
 // Fonction de validation
@@ -46,23 +42,12 @@ const validate = () => {
   }
 
   if (!user.value.password || user.value.password.length < 6) {
-    errors.value.password =
-      "Le mot de passe doit contenir au moins 6 caractères";
+    errors.value.password = "Le mot de passe doit contenir au moins 6 caractères";
     isValid = false;
   }
 
-  if (!user.value.bio) {
-    errors.value.bio = "La bio est obligatoire";
-    isValid = false;
-  }
-
-  if (!user.value.location) {
-    errors.value.location = "La localisation est obligatoire";
-    isValid = false;
-  }
-
-  if (!user.value.phone) {
-    errors.value.phone = "Le téléphone est obligatoire";
+  if (!user.value.role_id) {
+    errors.value.role_id = "Le rôle est obligatoire";
     isValid = false;
   }
 
@@ -82,12 +67,13 @@ const fetchUserProfile = async () => {
       }
     );
 
+    // Vérification si la réponse est correcte
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }
 
-    const data = await response.json();
-    user.value = data;
+    const data = await response.json(); // Lire la réponse JSON directement
+    user.value = data; // Mettre à jour l'utilisateur avec les données récupérées
   } catch (error) {
     console.error("Erreur lors de la récupération du profil :", error.message);
   }
@@ -124,10 +110,10 @@ const updateUserProfile = async () => {
   }
 };
 
+// Appeler fetchUserProfile lors du montage du composant
 onMounted(() => {
   fetchUserProfile();
 });
-
 </script>
 
 <template>
@@ -174,31 +160,14 @@ onMounted(() => {
         />
         <span v-if="errors.password">{{ errors.password }}</span>
 
-        <label for="bio">Bio </label>
-        <textarea
-          id="bio"
-          v-model="user.bio"
-          :class="{ error: errors.bio }"
-        ></textarea>
-        <span v-if="errors.bio">{{ errors.bio }}</span>
-
-        <label for="location">Localisation </label>
+        <label for="role_id">Rôle </label>
         <input
           type="text"
-          id="location"
-          v-model="user.location"
-          :class="{ error: errors.location }"
+          id="role_id"
+          v-model="user.role_id"
+          :class="{ error: errors.role_id }"
         />
-        <span v-if="errors.location">{{ errors.location }}</span>
-
-        <label for="phone">Téléphone </label>
-        <input
-          type="text"
-          id="phone"
-          v-model="user.phone"
-          :class="{ error: errors.phone }"
-        />
-        <span v-if="errors.phone">{{ errors.phone }}</span>
+        <span v-if="errors.role_id">{{ errors.role_id }}</span>
       </div>
 
       <!-- Boutons pour modifier et sauvegarder -->

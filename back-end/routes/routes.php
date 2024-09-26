@@ -1,4 +1,5 @@
 <?php
+header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -12,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // Inclure les fichiers nécessaires
 require_once __DIR__ . '/../controllers/RoomController.php';
 require_once __DIR__ . '/../controllers/ReservationController.php';
-require_once __DIR__ . '/../controllers/UserController.php'; 
+require_once __DIR__ . '/../controllers/UtilisateurController.php';
 require_once '../config/Database.php';
 
 // Initialiser la connexion à la base de données
@@ -30,7 +31,8 @@ try {
 // Créer les instances des contrôleurs
 $roomController = new RoomController($db);
 $reservationController = new ReservationController($db);
-$userController = new UserController($db); 
+$userController = new UtilisateurController($db);
+
 
 // Vérifier l'existence du paramètre 'action'
 if (isset($_GET['action'])) {
@@ -103,11 +105,11 @@ if (isset($_GET['action'])) {
             if (isset($input['user_id'], $input['course_id'], $input['room_id'], $input['reservation_date'], $input['start_time'], $input['end_time'])) {
                 try {
                     $reservationController->reserveRoom(
-                        $input['user_id'], 
-                        $input['course_id'], 
-                        $input['room_id'], 
-                        $input['reservation_date'], 
-                        $input['start_time'], 
+                        $input['user_id'],
+                        $input['course_id'],
+                        $input['room_id'],
+                        $input['reservation_date'],
+                        $input['start_time'],
                         $input['end_time']
                     );
                     echo json_encode(["message" => "Réservation réussie"]);
