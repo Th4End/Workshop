@@ -11,11 +11,16 @@ class RoomController {
     }
 
     public function getRooms() {
-        // Appel de getAllRooms() qui retourne déjà un tableau associatif
-        $result = $this->room->getAllRooms();
-
-        // Le résultat est déjà un tableau, pas besoin de fetch_assoc
-        echo json_encode($result); // Renvoie les salles sous forme de JSON
+        try {
+            $result = $this->room->getAllRooms();
+            echo json_encode($result); // Renvoie les salles sous forme de JSON
+        } catch (Exception $e) {
+            echo json_encode([
+                "message" => "Erreur lors de la récupération des salles",
+                "error" => $e->getMessage()
+            ]);
+        }
     }
+    
 }
 ?>

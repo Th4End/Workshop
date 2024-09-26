@@ -26,25 +26,20 @@ class Room {
     // Récupérer toutes les salles
     public function getAllRooms() {
         $query = "SELECT * FROM " . $this->table;
-        $stmt = $this->conn->prepare($query);
-
-        if (!$stmt) {
-            throw new Exception("Erreur lors de la préparation de la requête : " . $this->conn->error);
-        }
-
-        if (!$stmt->execute()) {
-            throw new Exception("Erreur lors de l'exécution de la requête : " . $stmt->error);
-        }
-
-        $result = $stmt->get_result();
+        $result = $this->conn->query($query);
+    
         if ($result === false) {
-            throw new Exception("Erreur lors de la récupération des résultats : " . $stmt->error);
+            throw new Exception("Erreur lors de l'exécution de la requête: " . $this->conn->error);
         }
-
-        // Vérifier si des salles ont été trouvées
-        $rooms = $result->fetch_all(MYSQLI_ASSOC);
-        return $rooms ? $rooms : []; // Retourner un tableau vide si aucune salle n'est trouvée
+    
+        $rooms = [];
+        while ($row = $result->fetch_assoc()) {
+            $rooms[] = $row;
+        }
+    
+        return $rooms; // Retourne un tableau associatif
     }
+    
 
     // Récupérer une salle par ID
     public function getRoomById($id) {

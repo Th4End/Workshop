@@ -53,6 +53,7 @@ if (isset($_GET['action'])) {
             if (isset($input['email'], $input['password'])) {
                 try {
                     $userController->login($input['email'], $input['password']);
+                    echo json_encode(["message" => "Connexion réussie"]);
                 } catch (Exception $e) {
                     echo json_encode([
                         "message" => "Erreur lors de la connexion",
@@ -160,11 +161,14 @@ if (isset($_GET['action'])) {
             } else {
                 echo json_encode(["message" => "ID manquant pour la récupération de l'utilisateur"]);
             }
-        }elseif ($action == 'getUserByEmail') {
+        }
+
+        // Récupérer un utilisateur par email
+        elseif ($action == 'getUserByEmail') {
             if (isset($_GET['email'])) {
-                $id = $_GET['email'];
+                $email = $_GET['email'];
                 try {
-                    $user = $userController->getUserByEmail($id);
+                    $user = $userController->getUserByEmail($email);
                     if ($user) {
                         echo json_encode($user);
                     } else {
@@ -177,7 +181,20 @@ if (isset($_GET['action'])) {
                     ]);
                 }
             } else {
-                echo json_encode(["message" => "ID manquant pour la récupération de l'utilisateur"]);
+                echo json_encode(["message" => "Email manquant pour la récupération de l'utilisateur"]);
+            }
+        }
+
+        // Récupérer toutes les salles
+        elseif ($action == 'getRooms') {
+            try {
+                $rooms = $roomController->getRooms(); 
+                return  json_encode($rooms); // Affiche les salles sous forme de JSON
+            } catch (Exception $e) {
+                echo json_encode([
+                    "message" => "Erreur lors de la récupération des salles",
+                    "error" => $e->getMessage()
+                ]);
             }
         }
 

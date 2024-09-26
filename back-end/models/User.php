@@ -131,7 +131,7 @@ class Utilisateur {
 
     // Mettre à jour un utilisateur
     public function updateUser($id, $name, $email, $password = null) {
-        $query = "UPDATE " . $this->table . " SET name = ?, email = ?" . ($password ? ", password = ? WHERE id = ?" : " WHERE id = ?");
+        $query = "UPDATE " . $this->table . " SET firstname = ?,lastname = ? , email = ?" . ($password ? ", password = ? WHERE id = ?" : " WHERE id = ?")."role_id = ?";
         $stmt = $this->conn->prepare($query);
         if ($stmt === false) {
             throw new Exception("Erreur lors de la préparation de la requête : " . $this->conn->error);
