@@ -23,6 +23,7 @@ class Reservation {
 
         $query = "INSERT INTO " . $this->table . " (user_id, course_id, room_id, reservation_date, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($query);
+        print_r($query);
 
         if ($stmt === false) {
             throw new Exception("Erreur lors de la préparation de la requête : " . $this->conn->error);
