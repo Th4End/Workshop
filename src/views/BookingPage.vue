@@ -41,7 +41,6 @@ const fetchRooms = async () => {
   } catch (error) {
     errorMessage.value =
       "Erreur lors de la récupération des salles : " + error.message;
-    console.error(errorMessage.value);
   }
 };
 
@@ -92,7 +91,7 @@ const reserveRoom = async (roomId) => {
         }
       } catch (error) {
         errorMessage.value = "Erreur lors de la réservation : " + error.message;
-        console.error(errorMessage.value);
+        // console.error(errorMessage.value);
       }
     } else {
       errorMessage.value =
@@ -147,7 +146,6 @@ const cancelReservation = async (roomId) => {
     <Header />
     <section class="booking-page">
       <h2>Réservation de salles</h2>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
       <div v-if="successMessage" class="success-message">
         {{ successMessage }}
       </div>

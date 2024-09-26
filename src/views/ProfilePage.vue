@@ -1,19 +1,15 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
 // Informations utilisateur
 const user = ref({
-  firstName: "John",
-  lastName: "Doe",
-  email: "johndoe@example.com",
+  firstName: "",
+  lastName: "",
+  email: "",
   password: "",
-  avatar: null, // Fichier d'image
-  bio: "Développeur web passionné.",
-  location: "Paris, France",
-  phone: "123-456-7890",
-  editable: false,
+  role_id: "",
 });
 
 // Erreurs de validation
@@ -22,10 +18,7 @@ const errors = ref({
   lastName: "",
   email: "",
   password: "",
-  bio: "",
-  location: "",
-  phone: "",
-  avatar: "",
+  role_id: "",
 });
 
 // Fonction de validation
@@ -49,57 +42,85 @@ const validate = () => {
   }
 
   if (!user.value.password || user.value.password.length < 6) {
-    errors.value.password =
-      "Le mot de passe doit contenir au moins 6 caractères";
+    errors.value.password = "Le mot de passe doit contenir au moins 6 caractères";
     isValid = false;
   }
 
-  if (!user.value.bio) {
-    errors.value.bio = "La bio est obligatoire";
-    isValid = false;
-  }
-
-  if (!user.value.location) {
-    errors.value.location = "La localisation est obligatoire";
-    isValid = false;
-  }
-
-  if (!user.value.phone) {
-    errors.value.phone = "Le téléphone est obligatoire";
+  if (!user.value.role_id) {
+    errors.value.role_id = "Le rôle est obligatoire";
     isValid = false;
   }
 
   return isValid;
 };
 
-// Fonction pour sauvegarder le profil
-const saveProfile = () => {
+// Fetch pour récupérer les informations du profil
+const fetchUserProfile = async () => {
+  try {
+    const response = await fetch(
+      "http://localhost/back-end/routes/routes.php?action=getUserProfile",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Vérification si la réponse est correcte
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
+    const data = await response.json(); // Lire la réponse JSON directement
+    user.value = data; // Mettre à jour l'utilisateur avec les données récupérées
+  } catch (error) {
+    console.error("Erreur lors de la récupération du profil :", error.message);
+  }
+};
+
+// Fetch pour mettre à jour le profil
+const updateUserProfile = async () => {
   if (validate()) {
-    if (confirm("Voulez-vous vraiment sauvegarder les modifications ?")) {
-      user.value.editable = false;
-      alert("Profil mis à jour avec succès !");
+    try {
+      const response = await fetch(
+        "http://localhost/back-end/routes/routes.php?action=updateUserProfile",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user.value),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.message === "Profil mis à jour avec succès") {
+        alert("Profil mis à jour avec succès !");
+      } else {
+        console.error("Erreur de mise à jour :", data.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du profil :", error.message);
     }
   }
 };
 
-// Fonction pour gérer l'ajout d'un avatar
-const handleAvatarChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      user.value.avatar = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-};
+// Appeler fetchUserProfile lors du montage du composant
+onMounted(() => {
+  fetchUserProfile();
+});
 </script>
 
 <template>
   <div class="main-container">
-  <Header />
+    <Header />
     <section class="profile-page">
-      <h2>Profile Utilisateur</h2>
+      <h2>Profil Utilisateur</h2>
 
       <!-- Affichage des informations de l'utilisateur -->
       <div class="profile-info">
@@ -108,7 +129,6 @@ const handleAvatarChange = (event) => {
           type="text"
           id="firstName"
           v-model="user.firstName"
-          :disabled="!user.editable"
           :class="{ error: errors.firstName }"
         />
         <span v-if="errors.firstName">{{ errors.firstName }}</span>
@@ -118,7 +138,6 @@ const handleAvatarChange = (event) => {
           type="text"
           id="lastName"
           v-model="user.lastName"
-          :disabled="!user.editable"
           :class="{ error: errors.lastName }"
         />
         <span v-if="errors.lastName">{{ errors.lastName }}</span>
@@ -128,7 +147,6 @@ const handleAvatarChange = (event) => {
           type="email"
           id="email"
           v-model="user.email"
-          :disabled="!user.editable"
           :class="{ error: errors.email }"
         />
         <span v-if="errors.email">{{ errors.email }}</span>
@@ -138,66 +156,30 @@ const handleAvatarChange = (event) => {
           type="password"
           id="password"
           v-model="user.password"
-          :disabled="!user.editable"
           :class="{ error: errors.password }"
         />
         <span v-if="errors.password">{{ errors.password }}</span>
 
-        <label for="avatar">Avatar </label>
-        <input
-          type="file"
-          id="avatar"
-          @change="handleAvatarChange"
-          :disabled="!user.editable"
-        />
-        <div v-if="user.avatar">
-          <img :src="user.avatar" alt="Avatar" class="avatar-preview" />
-        </div>
-
-        <label for="bio">Bio </label>
-        <textarea
-          id="bio"
-          v-model="user.bio"
-          :disabled="!user.editable"
-          :class="{ error: errors.bio }"
-        ></textarea>
-        <span v-if="errors.bio">{{ errors.bio }}</span>
-
-        <label for="location">Localisation </label>
+        <label for="role_id">Rôle </label>
         <input
           type="text"
-          id="location"
-          v-model="user.location"
-          :disabled="!user.editable"
-          :class="{ error: errors.location }"
+          id="role_id"
+          v-model="user.role_id"
+          :class="{ error: errors.role_id }"
         />
-        <span v-if="errors.location">{{ errors.location }}</span>
-
-        <label for="phone">Téléphone </label>
-        <input
-          type="text"
-          id="phone"
-          v-model="user.phone"
-          :disabled="!user.editable"
-          :class="{ error: errors.phone }"
-        />
-        <span v-if="errors.phone">{{ errors.phone }}</span>
+        <span v-if="errors.role_id">{{ errors.role_id }}</span>
       </div>
 
-      <!-- Boutons pour activer l'édition ou sauvegarder les modifications -->
+      <!-- Boutons pour modifier et sauvegarder -->
       <div class="button-group">
-        <button v-if="!user.editable" @click="user.editable = true">
-          Modifier
-        </button>
-        <button v-if="user.editable" @click="saveProfile">Enregistrer</button>
-        <button v-if="user.editable" @click="user.editable = false">
-          Annuler
-        </button>
+        <button @click="updateUserProfile">Enregistrer</button>
+        <button @click="fetchUserProfile">Annuler</button>
       </div>
     </section>
-  <Footer />
+    <Footer />
   </div>
 </template>
+
 
 <style scoped>
 .main-container {
@@ -242,14 +224,6 @@ button {
 
 button:disabled {
   background-color: #ccc;
-}
-
-.avatar-preview {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin: 10px 0;
 }
 
 .error {
