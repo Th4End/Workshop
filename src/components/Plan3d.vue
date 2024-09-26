@@ -1,27 +1,27 @@
 <script setup>
 import { ref, computed } from "vue";
 
-// Floor data (avec les chemins d'image corrigés)
+// Floor data avec des chemins d'images stockés dans le dossier `public`
 const floorData = [
   {
     id: 1,
     name: "RDC",
-    imageUrl: "/workshop/Plan/Plan_RDC.png", // Utilisation de chemins relatifs valides
+    imageUrl: "/Plan/Plan_RDC.webp", // Les images doivent être dans `public/Plan`
   },
   {
     id: 2,
     name: "1er étage",
-    imageUrl: "../Plan/Plan_1er_etage.png",
+    imageUrl: "/Plan/Plan_1er_etage.webp",
   },
   {
     id: 3,
     name: "2e étage",
-    imageUrl: "../Plan/Plan_2em_etage.png",
+    imageUrl: "/Plan/Plan_2em_etage.webp",
   },
   {
     id: 4,
     name: "3e étage",
-    imageUrl: "../Plan/Plan_3e_etage.png",
+    imageUrl: "/Plan/Plan_3e_etage.webp",
   },
 ];
 
@@ -75,7 +75,7 @@ input[type="range"] {
 }
 
 .floor-image img {
-  max-width: 100%; /* L'image s'adapte à la taille du conteneur */
+  max-width: 100%;
   height: auto;
   border: 1px solid #ccc;
   border-radius: 8px;

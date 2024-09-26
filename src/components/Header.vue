@@ -30,7 +30,12 @@ const handleLogout = () => {
       />
     </div>
 
-    <img class="header-logo" src="../../public/logo_badgit.webp" alt="logo" @click="router.push('/')">
+    <img
+      class="header-logo"
+      src="../../public/logo_badgit.webp"
+      alt="logo"
+      @click="router.push('/')"
+    />
 
     <div class="header-right">
       <font-awesome-icon
@@ -42,6 +47,7 @@ const handleLogout = () => {
         <ul>
           <li @click="router.push('/reserver-salle')">Réserver une salle</li>
           <li @click="router.push('/contact')">Contact</li>
+          <li @click="router.push('/building-plan')">Plan du bâtiment</li>
           <li @click="handleLogout">Déconnexion</li>
         </ul>
       </div>
@@ -56,7 +62,7 @@ const handleLogout = () => {
   align-items: center;
   height: 60px;
   padding: 10px;
-  background-color: var( --bg-color);
+  background-color: var(--bg-color);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 

@@ -7,24 +7,55 @@ import Footer from "../components/Footer.vue";
 const name = ref("");
 const email = ref("");
 const message = ref("");
-const messages = ref([]);
+const errorMessage = ref("");
+const successMessage = ref("");
 
-// Fonction pour gérer l'envoi des messages
-const sendMessage = () => {
-  if (name.value && email.value && message.value) {
-    messages.value.push({
-      name: name.value,
-      email: email.value,
-      message: message.value,
-      date: new Date().toLocaleString(),
-    });
-    alert("Votre message a été envoyé !");
-    // Réinitialiser les champs après l'envoi
-    name.value = "";
-    email.value = "";
-    message.value = "";
-  } else {
-    alert("Veuillez remplir tous les champs.");
+// Fonction pour gérer l'envoi des messages via API
+const sendMessage = async () => {
+  // Réinitialiser les messages
+  errorMessage.value = "";
+  successMessage.value = "";
+
+  // Vérifier que tous les champs sont remplis
+  if (!name.value || !email.value || !message.value) {
+    errorMessage.value = "Veuillez remplir tous les champs.";
+    return;
+  }
+
+  try {
+    // Envoyer les données au backend
+    const response = await fetch(
+      "http://localhost/back-end/routes/routes.php?action=sendContactMessage",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.value,
+          email: email.value,
+          message: message.value,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (data.success) {
+      successMessage.value = "Votre message a été envoyé avec succès !";
+      // Réinitialiser les champs du formulaire
+      name.value = "";
+      email.value = "";
+      message.value = "";
+    } else {
+      errorMessage.value = data.message || "Erreur lors de l'envoi du message.";
+    }
+  } catch (error) {
+    errorMessage.value = "Erreur lors de l'envoi du message : " + error.message;
+    console.error(error.message);
   }
 };
 </script>
@@ -35,50 +66,37 @@ const sendMessage = () => {
     <section class="contact-page">
       <h2>Contactez-nous</h2>
 
+      <!-- Messages d'erreur ou de succès -->
+      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+      <div v-if="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
       <!-- Formulaire de contact -->
       <div class="contact-form">
         <label for="name">Nom</label>
-        <input
-          type="text"
-          id="name"
-          v-model.trim="name"
-          placeholder="Votre nom"
-        />
+        <input type="text" id="name" v-model="name" placeholder="Votre nom" />
 
         <label for="email">Email</label>
         <input
           type="email"
           id="email"
-          v-model.trim="email"
+          v-model="email"
           placeholder="Votre email"
         />
 
         <label for="message">Message</label>
         <textarea
           id="message"
-          v-model.trim="message"
+          v-model="message"
           placeholder="Votre message"
         ></textarea>
 
         <button @click="sendMessage">Envoyer</button>
       </div>
-
-      <!-- Affichage des messages envoyés -->
-      <div class="messages">
-        <h3>Messages envoyés</h3>
-        <div v-for="(msg, index) in messages" :key="index" class="message">
-          <p>
-            <strong>{{ msg.name }} ({{ msg.email }})</strong>
-          </p>
-          <p>{{ msg.message }}</p>
-          <p>
-            <em>Envoyé le {{ msg.date }}</em>
-          </p>
-        </div>
-      </div>
     </section>
     <Footer />
-</div>
+  </div>
 </template>
 
 <style scoped>
@@ -125,14 +143,14 @@ button {
   border-radius: 5px;
 }
 
-.messages {
-  text-align: left;
+.error-message {
+  color: red;
+  margin-bottom: 20px;
 }
 
-.message {
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+.success-message {
+  color: green;
+  margin-bottom: 20px;
 }
 
 @media (min-width: 768px) {
