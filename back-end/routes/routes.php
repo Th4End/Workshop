@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 require_once __DIR__ . '/../controllers/RoomController.php';
 require_once __DIR__ . '/../controllers/ReservationController.php';
 require_once __DIR__ . '/../controllers/UtilisateurController.php';
+require_once __DIR__ . '/../controllers/ConnexionController.php';
 require_once '../config/Database.php';
 
 // Initialiser la connexion à la base de données
@@ -31,7 +32,7 @@ try {
 // Créer les instances des contrôleurs
 $roomController = new RoomController($db);
 $reservationController = new ReservationController($db);
-$userController = new UtilisateurController($db);
+$userController = new Utilisateur($db);
 
 // Vérifier l'existence du paramètre 'action'
 if (isset($_GET['action'])) {
@@ -52,8 +53,8 @@ if (isset($_GET['action'])) {
         if ($action == 'login') {
             if (isset($input['email'], $input['password'])) {
                 try {
-                    $userController->login($input['email'], $input['password']);
-                    echo json_encode(["message" => "Connexion réussie"]);
+                    // Appel à la fonction de connexion dans le contrôleur
+                    $loginController->login($input['email'], $input['password']);
                 } catch (Exception $e) {
                     echo json_encode([
                         "message" => "Erreur lors de la connexion",
