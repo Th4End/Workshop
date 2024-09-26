@@ -2,7 +2,7 @@
 class Database {
     private $host = '192.168.1.145';
     private $db_name = 'badgeit';
-    private $username = 'root@localhost';
+    private $username = 'root';
     private $password = '';
     public $conn;
 

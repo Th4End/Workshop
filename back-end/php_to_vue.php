@@ -17,7 +17,7 @@
   $email = $_POST['email'];
 
   // Insérer les données dans la base de données
-  $sql = "INSERT INTO your_table_name (name, email) VALUES ('$name', '$email')";
+  $sql = "INSERT INTO utilisateurs (name, email) VALUES ('$name', '$email')";
   $result = $conn->query($sql);
 
   // Fermer la connexion
