@@ -37,9 +37,10 @@ const fetchRooms = async () => {
     }
 
     const data = await response.json();
-    rooms.value = data.map(room => ({ ...room, currentOccupancy: 0 })); // Assurez-vous que currentOccupancy commence à 0
+    rooms.value = data.map((room) => ({ ...room, currentOccupancy: 0 })); // Assurez-vous que currentOccupancy commence à 0
   } catch (error) {
-    errorMessage.value = "Erreur lors de la récupération des salles : " + error.message;
+    errorMessage.value =
+      "Erreur lors de la récupération des salles : " + error.message;
   }
 };
 
@@ -50,7 +51,9 @@ onMounted(() => {
 // Fonction pour gérer la réservation avec requête POST
 const reserveRoom = async (roomId) => {
   const room = rooms.value.find((r) => r.id === roomId);
-  console.log(`Room ID: ${roomId}, Current Occupancy: ${room.currentOccupancy}, Capacity: ${room.capacity}`); // Log ici
+  console.log(
+    `Room ID: ${roomId}, Current Occupancy: ${room.currentOccupancy}, Capacity: ${room.capacity}`
+  ); // Log ici
   if (room && room.selectedTimeSlot) {
     if (room.currentOccupancy < room.capacity) {
       try {
@@ -91,7 +94,8 @@ const reserveRoom = async (roomId) => {
         // console.error(errorMessage.value);
       }
     } else {
-      errorMessage.value = "La salle est pleine. Veuillez sélectionner un autre créneau.";
+      errorMessage.value =
+        "La salle est pleine. Veuillez sélectionner un autre créneau.";
     }
   } else {
     errorMessage.value = "Veuillez sélectionner un créneau horaire.";
@@ -142,7 +146,9 @@ const cancelReservation = async (roomId) => {
     <Header />
     <section class="booking-page">
       <h2>Réservation de salles</h2>
-      <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+      <div v-if="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
       <div class="room-grid">
         <div v-for="room in rooms" :key="room.id" class="room-card">
           <div class="room-info">
