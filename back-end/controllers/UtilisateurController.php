@@ -23,17 +23,6 @@ class UtilisateurController {
         }
     }
 
-    // Connexion de l'utilisateur
-    public function login($email, $password) {
-        $user = $this->utilisateurModel->getUserByEmail($email);
-
-        if ($user && password_verify($password, $user['password'])) {
-            return json_encode(["message" => "Connexion réussie.", "user" => $user]);
-        } else {
-            throw new Exception("Identifiants invalides.");
-        }
-    }
-
     // Mettre à jour un utilisateur
     public function updateUser($id, $name, $email, $password) {
         if ($this->isEmailValid($email) && $this->isPasswordValid($password)) {

@@ -12,20 +12,20 @@ const password = ref("");
 const errorMessage = ref(null);
 
 // Fonction pour gérer la connexion
+
 const login = async () => {
-  // Réinitialiser le message d'erreur
-  errorMessage.value = "";
+  // // Réinitialiser le message d'erreur
+  // errorMessage.value = "";
 
-  // Vérification basique des champs
-  if (!email.value || !password.value) {
-    errorMessage.value = "Tous les champs doivent être remplis.";
-    return;
-  }
+  // // Vérification basique des champs
+  // if (!email.value || !password.value) {
+  //   errorMessage.value = "Tous les champs doivent être remplis.";
+  //   return;
+  // }
 
-  try {
-    // Envoyer les données de connexion au backend via une requête POST
+    try {
     const response = await fetch(
-      "http://localhost/back-end/routes/routes.php?action=loginUser",
+      "http://localhost/back-end/routes/routes.php?action=login",
       {
         method: "POST",
         headers: {
@@ -38,24 +38,25 @@ const login = async () => {
       }
     );
 
+    console.log('bodyUsed avant lecture:', response.bodyUsed);
+
+    console.log(response); // Voir la réponse brute
+
     if (!response.ok) {
       throw new Error(`Erreur HTTP: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('bodyUsed après lecture:', response.bodyUsed); // bodyUsed doit être true ici
+    console.log('Données JSON:', data);
 
     if (data.success) {
-      // Si la connexion est réussie, rediriger vers la page d'accueil ou le profil
-      router.push("/home");
+      router.push("/");
     } else {
-      // Afficher le message d'erreur renvoyé par le backend
-      errorMessage.value =
-        data.message || "Échec de la connexion. Veuillez réessayer.";
+      errorMessage.value = data.message || "Échec de la connexion. Veuillez réessayer.";
     }
   } catch (error) {
-    // Gérer les erreurs côté client
     errorMessage.value = "Erreur lors de la connexion : " + error.message;
-    console.error(error.message);
   }
 };
 </script>
@@ -65,8 +66,6 @@ const login = async () => {
   <div class="login-page">
     <h1>Connexion</h1>
     <p>Connectez-vous pour accéder à votre profil et gérer vos réservations.</p>
-
-    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
     <!-- Formulaire de connexion -->
     <form @submit.prevent="login" class="login-form">
