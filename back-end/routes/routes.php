@@ -4,6 +4,7 @@ header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
+
 // Gérer les requêtes CORS OPTIONS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
@@ -189,7 +190,7 @@ if (isset($_GET['action'])) {
         // Récupérer toutes les salles
         elseif ($action == 'getRooms') {
             try {
-                $rooms = $roomController->getRooms(); 
+                $rooms = $roomController->getRooms();
                 return  json_encode($rooms); // Affiche les salles sous forme de JSON
             } catch (Exception $e) {
                 echo json_encode([
