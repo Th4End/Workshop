@@ -4,6 +4,7 @@ header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
+
 // Gérer les requêtes CORS OPTIONS
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
@@ -50,20 +51,22 @@ if (isset($_GET['action'])) {
 
         // Connexion de l'utilisateur
         if ($action == 'login') {
-            if (isset($input['email'], $input['password'])) {
-                try {
-                    $userController->login($input['email'], $input['password']);
-                    echo json_encode(["message" => "Connexion réussie"]);
-                } catch (Exception $e) {
-                    echo json_encode([
-                        "message" => "Erreur lors de la connexion",
-                        "error" => $e->getMessage()
-                    ]);
-                }
-            } else {
-                echo json_encode(["message" => "Paramètres manquants pour la connexion"]);
-            }
-        }
+          // Appelle la méthode login du contrôleur utilisateur et récupère le résultat
+          if ($userController->login($input['email'], $input['password'])) {
+              // Si la connexion réussit, renvoie une réponse JSON de succès
+              echo json_encode([
+                  'success' => true,
+                  'message' => 'Connexion réussie'
+              ]);
+          } else {
+              // Si la connexion échoue, renvoie une réponse JSON d'erreur
+              echo json_encode([
+                  'success' => false,
+                  'message' => 'Erreur lors de la connexion. Email ou mot de passe incorrect.'
+              ]);
+          }
+          exit(); // Assure-toi que le script s'arrête après l'envoi de la réponse
+      }
 
         // Création d'un utilisateur
         elseif ($action == 'createUser') {
@@ -188,7 +191,7 @@ if (isset($_GET['action'])) {
         // Récupérer toutes les salles
         elseif ($action == 'getRooms') {
             try {
-                $rooms = $roomController->getRooms(); 
+                $rooms = $roomController->getRooms();
                 return  json_encode($rooms); // Affiche les salles sous forme de JSON
             } catch (Exception $e) {
                 echo json_encode([
