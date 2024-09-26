@@ -40,7 +40,6 @@ const fetchRooms = async () => {
     rooms.value = data.map(room => ({ ...room, currentOccupancy: 0 })); // Assurez-vous que currentOccupancy commence à 0
   } catch (error) {
     errorMessage.value = "Erreur lors de la récupération des salles : " + error.message;
-    console.error(errorMessage.value);
   }
 };
 
@@ -89,7 +88,7 @@ const reserveRoom = async (roomId) => {
         }
       } catch (error) {
         errorMessage.value = "Erreur lors de la réservation : " + error.message;
-        console.error(errorMessage.value);
+        // console.error(errorMessage.value);
       }
     } else {
       errorMessage.value = "La salle est pleine. Veuillez sélectionner un autre créneau.";
@@ -143,7 +142,6 @@ const cancelReservation = async (roomId) => {
     <Header />
     <section class="booking-page">
       <h2>Réservation de salles</h2>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
       <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
       <div class="room-grid">
         <div v-for="room in rooms" :key="room.id" class="room-card">
@@ -263,4 +261,3 @@ button:disabled {
   }
 }
 </style>
-  
